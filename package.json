@@ -1,0 +1,37 @@
+{
+  "name": "hyperdrive-to-zip-stream",
+  "version": "1.0.0",
+  "description": "Create a zipfile from a hyperdrive",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfrazee/hyperdrive-to-zip-stream.git"
+  },
+  "keywords": [
+    "hyperdrive",
+    "zip",
+    "dat"
+  ],
+  "author": "Paul Frazee <pfrazee@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pfrazee/hyperdrive-to-zip-stream/issues"
+  },
+  "homepage": "https://github.com/pfrazee/hyperdrive-to-zip-stream#readme",
+  "dependencies": {
+    "from2": "^2.1.1",
+    "through2-concurrent": "^1.1.1",
+    "yazl": "^2.4.1"
+  },
+  "devDependencies": {
+    "concat-stream": "^1.5.1",
+    "hyperdrive": "^7.2.0",
+    "memdb": "^1.3.1",
+    "random-access-file": "^1.3.0",
+    "tape": "^4.6.0",
+    "yauzl": "^2.6.0"
+  }
+}
