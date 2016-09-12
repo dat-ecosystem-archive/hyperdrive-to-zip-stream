@@ -19,7 +19,12 @@ module.exports = function (archive) {
     var listingStream = from2.obj((size, next) => {
       if (entriesKeys.length === 0)
         return next(null, null)
-      next(null, entriesMap[entriesKeys.shift()])
+
+      // find the next downloaded entry
+      var entry
+      do { entry = entriesMap[entriesKeys.shift()] }
+      while (entry && !isEntryDownloaded(archive, entry))
+      next(null, entry || null)
     })
 
     // create the writestream
@@ -52,4 +57,13 @@ module.exports = function (archive) {
 
 function makePathRelative (path) {
   return path.replace(/^\//, '')
+}
+
+function isEntryDownloaded (archive, entry) {
+  var offset = entry.content.blockOffset
+  for (var i=0; i < entry.blocks; i++) {
+    if (!archive.content.has(i + offset))
+      return false
+  }
+  return true
 }
