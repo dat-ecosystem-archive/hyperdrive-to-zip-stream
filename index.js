@@ -31,7 +31,7 @@ module.exports = function (archive) {
 
         // pipe each entry into the zip
         var fileReadStream = archive.createFileReadStream(entry)
-        zipfile.addReadStream(fileReadStream, entry.name)
+        zipfile.addReadStream(fileReadStream, makePathRelative(entry.name))
         fileReadStream.on('error', onerror)
         fileReadStream.on('end', cb)
       }))
@@ -48,4 +48,8 @@ module.exports = function (archive) {
   }
 
   return zipfile.outputStream
+}
+
+function makePathRelative (path) {
+  return path.replace(/^\//, '')
 }
