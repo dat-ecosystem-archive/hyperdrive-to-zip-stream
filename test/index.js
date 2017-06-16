@@ -1,103 +1,57 @@
 const tape = require('tape')
 const hyperdrive = require('hyperdrive')
 const yauzl = require('yauzl')
+const tempy = require('tempy')
 const fs = require('fs')
-const memdb = require('memdb')
 const path = require('path')
-const raf = require('random-access-file')
 const concat = require('concat-stream')
+const pda = require('pauls-dat-api')
 const toZipStream = require('../')
 
-tape('creates a valid zip archive from static dats', t => {
-  var drive = hyperdrive(memdb())
+function readFile (name) {
+  return fs.readFileSync(path.join(__dirname, name), 'utf8')
+}
 
-  var archive = drive.createArchive({
-    live: false,
-    file: function (name) {
-      return raf(path.join(__dirname, name), {readable: true, writable: false})
-    }
-  })
-  archive.append('hello.txt')
-  archive.append('log.js')
-  archive.append('dir/hello.txt')
+tape('creates a valid zip archive', async t => {
+  var archive = hyperdrive(tempy.directory())
+  await new Promise(archive.ready)
+  await pda.writeFile(archive, 'hello.txt', readFile('hello.txt'), 'utf8')
+  await pda.writeFile(archive, 'log.js', readFile('log.js'), 'utf8')
+  await pda.mkdir(archive, 'dir')
+  await pda.writeFile(archive, 'dir/hello.txt', readFile('dir/hello.txt'), 'utf8')
 
-  archive.finalize(function () {
+  toZipStream(archive).pipe(concat(zipBuf => {
+    console.log('is here')
 
-    toZipStream(archive).pipe(concat(zipBuf => {
-
-      yauzl.fromBuffer(zipBuf, (err, zip) => {
-        if (err) throw err
-        getAllEntries(zip, entries => {
-          t.equal(Object.keys(entries).length, 3)
-          t.ok(entries['hello.txt'])
-          t.ok(entries['log.js'])
-          t.ok(entries['dir/hello.txt'])
-          t.end()
-        })
+    yauzl.fromBuffer(zipBuf, (err, zip) => {
+      if (err) throw err
+      getAllEntries(zip, entries => {
+        t.equal(Object.keys(entries).length, 3)
+        t.ok(entries['hello.txt'])
+        t.ok(entries['log.js'])
+        t.ok(entries['dir/hello.txt'])
+        t.end()
       })
+    })
 
-    }))
-  })
+  }))
 })
 
-tape('creates a valid zip archive from live dats', t => {
-  var drive = hyperdrive(memdb())
+tape('creates a valid zip archive from an empty archives', async t => {
+  var archive = hyperdrive(tempy.directory())
+  await new Promise(archive.ready)
 
-  var archive = drive.createArchive({
-    live: true,
-    file: function (name) {
-      return raf(path.join(__dirname, name), {readable: true, writable: false})
-    }
-  })
-  archive.append('hello.txt', done)
-  archive.append('log.js', done)
-  archive.append('dir/hello.txt', done)
+  toZipStream(archive).pipe(concat(zipBuf => {
 
-  var ndone = 3
-  function done () {
-    if (--ndone) return
-
-    toZipStream(archive).pipe(concat(zipBuf => {
-
-      yauzl.fromBuffer(zipBuf, (err, zip) => {
-        if (err) throw err
-        getAllEntries(zip, entries => {
-          t.equal(Object.keys(entries).length, 3)
-          t.ok(entries['hello.txt'])
-          t.ok(entries['log.js'])
-          t.ok(entries['dir/hello.txt'])
-          t.end()
-        })
+    yauzl.fromBuffer(zipBuf, (err, zip) => {
+      if (err) throw err
+      getAllEntries(zip, entries => {
+        t.equal(Object.keys(entries).length, 0)
+        t.end()
       })
+    })
 
-    }))
-  }
-})
-
-tape('creates a valid zip archive from an empty static dats', t => {
-  var drive = hyperdrive(memdb())
-
-  var archive = drive.createArchive({
-    live: false,
-    file: function (name) {
-      return raf(path.join(__dirname, name), {readable: true, writable: false})
-    }
-  })
-
-  archive.finalize(function () {
-
-    toZipStream(archive).pipe(concat(zipBuf => {
-
-      yauzl.fromBuffer(zipBuf, (err, zip) => {
-        if (err) throw err
-        getAllEntries(zip, entries => {
-          t.equal(Object.keys(entries).length, 0)
-          t.end()
-        })
-      })
-
-    }))
-  })
+  }))
 })
 
 function getAllEntries (zip, cb) {

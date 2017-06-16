@@ -22,16 +22,16 @@
   },
   "homepage": "https://github.com/pfrazee/hyperdrive-to-zip-stream#readme",
   "dependencies": {
-    "from2": "^2.1.1",
+    "from2": "^2.3.0",
+    "pauls-dat-api": "^4.2.4",
     "through2-concurrent": "^1.1.1",
-    "yazl": "^2.4.1"
+    "yazl": "^2.4.2"
   },
   "devDependencies": {
-    "concat-stream": "^1.5.1",
-    "hyperdrive": "^7.2.0",
-    "memdb": "^1.3.1",
-    "random-access-file": "^1.3.0",
-    "tape": "^4.6.0",
-    "yauzl": "^2.6.0"
+    "concat-stream": "^1.6.0",
+    "hyperdrive": "^9.4.1",
+    "tape": "^4.6.3",
+    "tempy": "^0.1.0",
+    "yauzl": "^2.8.0"
   }
 }
