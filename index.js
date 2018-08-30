@@ -1,3 +1,4 @@
+const {join} = require('path')
 const yazl = require('yazl')
 const from2 = require('from2')
 const through2Concurrent = require('through2-concurrent')
@@ -20,9 +21,11 @@ module.exports = function (archive, dirpath) {
     // create the writestream
     var zipWriteStream = listingStream
       .pipe(through2Concurrent.obj({ maxConcurrency: 3 }, async (path, enc, cb) => {
+        var readPath = join(dirpath, path)
+        
         // files only
         try {
-          var entry = await pda.stat(archive, path)
+          var entry = await pda.stat(archive, readPath)
           if (!entry.isFile()) {
             return cb()
           }
@@ -31,7 +34,7 @@ module.exports = function (archive, dirpath) {
         }
 
         // pipe each entry into the zip
-        var fileReadStream = archive.createReadStream(path)
+        var fileReadStream = archive.createReadStream(readPath)
         zipfile.addReadStream(fileReadStream, path)
         fileReadStream.on('error', onerror)
         fileReadStream.on('end', cb)

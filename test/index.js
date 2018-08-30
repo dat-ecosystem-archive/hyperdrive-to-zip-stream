@@ -18,7 +18,7 @@ tape('creates a valid zip archive', async t => {
   await pda.writeFile(archive, 'hello.txt', readFile('hello.txt'), 'utf8')
   await pda.writeFile(archive, 'log.js', readFile('log.js'), 'utf8')
   await pda.mkdir(archive, 'dir')
-  await pda.writeFile(archive, 'dir/hello.txt', readFile('dir/hello.txt'), 'utf8')
+  await pda.writeFile(archive, 'dir/hello2.txt', readFile('dir/hello2.txt'), 'utf8')
 
   toZipStream(archive).pipe(concat(zipBuf => {
 
@@ -28,7 +28,7 @@ tape('creates a valid zip archive', async t => {
         t.equal(Object.keys(entries).length, 3)
         t.ok(entries['hello.txt'])
         t.ok(entries['log.js'])
-        t.ok(entries['dir/hello.txt'])
+        t.ok(entries['dir/hello2.txt'])
         t.end()
       })
     })
@@ -42,7 +42,7 @@ tape('creates a valid zip archive from subfolders', async t => {
   await pda.writeFile(archive, 'hello.txt', readFile('hello.txt'), 'utf8')
   await pda.writeFile(archive, 'log.js', readFile('log.js'), 'utf8')
   await pda.mkdir(archive, 'dir')
-  await pda.writeFile(archive, 'dir/hello.txt', readFile('dir/hello.txt'), 'utf8')
+  await pda.writeFile(archive, 'dir/hello2.txt', readFile('dir/hello2.txt'), 'utf8')
 
   toZipStream(archive, '/dir').pipe(concat(zipBuf => {
 
@@ -50,7 +50,7 @@ tape('creates a valid zip archive from subfolders', async t => {
       if (err) throw err
       getAllEntries(zip, entries => {
         t.equal(Object.keys(entries).length, 1)
-        t.ok(entries['hello.txt'])
+        t.ok(entries['hello2.txt'])
         t.end()
       })
     })
