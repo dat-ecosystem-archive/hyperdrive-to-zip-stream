@@ -23,7 +23,7 @@
   "homepage": "https://github.com/pfrazee/hyperdrive-to-zip-stream#readme",
   "dependencies": {
     "from2": "^2.3.0",
-    "pauls-dat-api": "^4.2.4",
+    "pauls-dat-api": "^8.0.1",
     "through2-concurrent": "^1.1.1",
     "yazl": "^2.4.2"
   },

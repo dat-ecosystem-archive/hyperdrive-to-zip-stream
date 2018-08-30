@@ -3,11 +3,12 @@ const from2 = require('from2')
 const through2Concurrent = require('through2-concurrent')
 const pda = require('pauls-dat-api')
 
-module.exports = function (archive) {
+module.exports = function (archive, dirpath) {
   var zipfile = new yazl.ZipFile()
 
   // create listing stream
-  pda.readdir(archive, '/', {recursive: true}).then(paths => {
+  dirpath = dirpath || '/'
+  pda.readdir(archive, dirpath, {recursive: true}).then(paths => {
     var i = 0
     var listingStream = from2.obj((size, next) => {
       if (i >= paths.length) {

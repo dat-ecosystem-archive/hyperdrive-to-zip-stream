@@ -21,7 +21,6 @@ tape('creates a valid zip archive', async t => {
   await pda.writeFile(archive, 'dir/hello.txt', readFile('dir/hello.txt'), 'utf8')
 
   toZipStream(archive).pipe(concat(zipBuf => {
-    console.log('is here')
 
     yauzl.fromBuffer(zipBuf, (err, zip) => {
       if (err) throw err
@@ -30,6 +29,28 @@ tape('creates a valid zip archive', async t => {
         t.ok(entries['hello.txt'])
         t.ok(entries['log.js'])
         t.ok(entries['dir/hello.txt'])
+        t.end()
+      })
+    })
+
+  }))
+})
+
+tape('creates a valid zip archive from subfolders', async t => {
+  var archive = hyperdrive(tempy.directory())
+  await new Promise(archive.ready)
+  await pda.writeFile(archive, 'hello.txt', readFile('hello.txt'), 'utf8')
+  await pda.writeFile(archive, 'log.js', readFile('log.js'), 'utf8')
+  await pda.mkdir(archive, 'dir')
+  await pda.writeFile(archive, 'dir/hello.txt', readFile('dir/hello.txt'), 'utf8')
+
+  toZipStream(archive, '/dir').pipe(concat(zipBuf => {
+
+    yauzl.fromBuffer(zipBuf, (err, zip) => {
+      if (err) throw err
+      getAllEntries(zip, entries => {
+        t.equal(Object.keys(entries).length, 1)
+        t.ok(entries['hello.txt'])
         t.end()
       })
     })
